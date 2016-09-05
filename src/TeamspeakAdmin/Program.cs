@@ -16,7 +16,7 @@ namespace TeamspeakWebAdmin
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
                 .UseStartup<Startup>()
-                .UseUrls("127.0.0.1:10000")
+                .UseUrls("http://ts.jakke.se")
                 .Build();
 
             host.Run();
