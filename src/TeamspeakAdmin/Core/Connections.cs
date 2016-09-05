@@ -11,23 +11,16 @@ namespace TeamspeakWebAdmin.Core
     public class Connections
     {
         private static List<Connection> connections = new List<Connection>();
-
-        public static string Connect(ConnectModel model, string Local)
-        {
-            if (Local == "localhost")
-                Local = "127.0.0.1";
-            return Connect(model, IPAddress.Parse(Local));
-        }
-
+        
         /// <summary>
         /// Attempts to connect and login to the Teamspeak Query
         /// </summary>
         /// <param name="model">Model</param>
         /// <param name="Local">Local IP</param>
         /// <exception cref="Exception">Throws a general exception containing a message</exception>
-        public static string Connect(ConnectModel model, IPAddress Local)
+        public static string Connect(ConnectModel model)
         {
-            var conn = new Connection(IPAddress.Parse(model.IP), model.Port, Local);
+            var conn = new Connection(IPAddress.Parse(model.IP), model.Port);
             conn.Login(model.Username, model.Password);
             connections.Add(conn);
             return conn.Guid;

@@ -15,16 +15,14 @@ namespace TeamspeakWebAdmin.Core
     public class Connection
     {
         public string Guid { get; private set; }
-        public IPAddress LocalEndPoint { get; private set; }
 
         private Socket client;
         private int timeout = 5000;
         private bool reading = false;
         
-        public Connection(IPAddress IP, int Port, IPAddress Local)
+        public Connection(IPAddress IP, int Port)
         {
             Guid = System.Guid.NewGuid().ToString();
-            LocalEndPoint = Local;
             client = new Socket(SocketType.Stream, ProtocolType.Tcp);
             client.Connect(IP, Port);
         }

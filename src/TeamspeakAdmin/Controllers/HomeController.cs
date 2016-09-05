@@ -25,7 +25,7 @@ namespace TeamspeakWebAdmin.Controllers
                     Password = HttpContext.Session.GetString("Password"),
                     ErrorMessage = HttpContext.Session.GetString("ErrorMessage"),
                     Port = HttpContext.Session.GetInt32("Port") != null ? (int)HttpContext.Session.GetInt32("Port") : 0,
-                    Error = HttpContext.Session.GetInt32("Port") == 1 ? true : false
+                    Error = HttpContext.Session.GetInt32("Error") == 1 ? true : false
                 };
             }
             set
@@ -52,7 +52,7 @@ namespace TeamspeakWebAdmin.Controllers
 
         public ActionResult Index(ConnectModel model)
         {
-            if (ConnectModelSession.LoginSufficent())
+            if (ConnectModelSession.Error)
             {
                 model = ConnectModelSession;
                 ClearSession();
@@ -64,7 +64,7 @@ namespace TeamspeakWebAdmin.Controllers
             }
         }
 
-        public async Task<ActionResult> Connect(ConnectModel model)
+        public ActionResult Connect(ConnectModel model)
         {
             if (ConnectModelSession.ConnectSufficent())
             {
@@ -82,7 +82,7 @@ namespace TeamspeakWebAdmin.Controllers
 
             try
             {
-                model.Guid = Connections.Connect(model, Request.HttpContext.Request.Host.Host);
+                model.Guid = Connections.Connect(model);
             }
             catch (Exception ex)
             {
