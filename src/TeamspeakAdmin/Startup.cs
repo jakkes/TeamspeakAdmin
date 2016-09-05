@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace TeamspeakAdmin
+namespace TeamspeakWebAdmin
 {
     public class Startup
     {
@@ -29,6 +29,11 @@ namespace TeamspeakAdmin
         {
             // Add framework services.
             services.AddMvc();
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(10);
+                options.CookieName = ".TeamspeakWebAdmin";
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -48,6 +53,7 @@ namespace TeamspeakAdmin
             }
 
             app.UseStaticFiles();
+            app.UseSession(new SessionOptions() { IdleTimeout = TimeSpan.FromMinutes(10), CookieName = ".TWA" });
 
             app.UseMvc(routes =>
             {
