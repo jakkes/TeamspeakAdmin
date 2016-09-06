@@ -127,6 +127,8 @@ namespace TeamspeakWebAdmin.Core
 
         public void Kick(string text, int id, int reasonid)
         {
+            if (string.IsNullOrEmpty(text))
+                text = "";
             Send(string.Format("clientkick reasonid={0} msg={1} clid={2}", reasonid, text.Replace(" ", "\\s"), id));
         }
 
@@ -137,6 +139,8 @@ namespace TeamspeakWebAdmin.Core
 
         public void Ban(string text, int id, int time)
         {
+            if (string.IsNullOrEmpty(text))
+                text = "";
             Send(string.Format("banclient clid={0} time={1} banreason={2}", id, time * 3600, text.Replace(" ", "\\s")));
         }
 

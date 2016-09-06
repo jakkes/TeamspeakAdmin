@@ -20,8 +20,8 @@ var cl = document.getElementById("ChannelList");
 function ServerGroupNameFromId(id) {
     if (ServerGroupList != undefined) {
         for (var i = 0; i < ServerGroupList.length; i++) {
-            if (ServerGroupList[i].ServerGroupId == id)
-                return ServerGroupList[i].Name;
+            if (ServerGroupList[i].serverGroupId == id)
+                return ServerGroupList[i].name;
         }
     }
     return id;
@@ -30,8 +30,8 @@ function ServerGroupNameFromId(id) {
 function ChannelGroupNameFromId(id) {
     if (ChannelGroupList != undefined) {
         for (var i = 0; i < ChannelGroupList.length; i++) {
-            if (ChannelGroupList[i].ChannelGroupId == id)
-                return ChannelGroupList[i].Name;
+            if (ChannelGroupList[i].channelGroupId == id)
+                return ChannelGroupList[i].name;
         }
     }
     return id;
@@ -56,13 +56,11 @@ function CollapseChannelControls(target) {
 function Send(request, re, data, fail) {
     if (!sending) {
         sending = true;
-        console.log(request);
         if (data == undefined)
             data = {};
         data.Guid = guid
         $.post("/A/" + request + "/", data, function (e) {
             sending = false;
-            console.log(e);
             re(e);
         }).fail(function (e) {
             sending = false;
@@ -139,7 +137,7 @@ function ChangeServerSelection(e) {
         return;
     ServerIndex = index;
     DeselectUser();
-    document.getElementById("ServerName").innerText = ServerList[ServerIndex].Name;
+    document.getElementById("ServerName").innerText = ServerList[ServerIndex].name;
     Send("SelectServer", function (e) {
         Send("ServerGroupList", function (e) {
             ServerGroupList = e;
@@ -266,30 +264,32 @@ function CreateUser(index) {
 
     return root;
 }
-
+var temp;
 function SelectUser(e) {
     DeselectChannel();
     ClientIndex = e.srcElement.id.split("-")[1];
     document.getElementById("ClientName").innerText = ClientList[ClientIndex].name;
     Send("ClientInfo", function (e) {
-        document.getElementById("NameLabel").innerText = e.Name;
-        document.getElementById("UniqueIdLabel").innerText = e.UniqueId;
-        document.getElementById("VersionLabel").innerText = e.Version;
-        document.getElementById("IPLabel").innerText = e.IP;
-        document.getElementById("ConnectionsLabel").innerText = e.TotalConnections;
-        document.getElementById("FirstConnectedLabel").innerText = toDateTime(e.ClientCreated).toLocaleString();
-        document.getElementById("LastConnectedLabel").innerText = toDateTime(e.ClientLastConnected).toLocaleString();
-        document.getElementById("IdleTimeLabel").innerText = e.IdleTime;
+        console.log(e);
+        temp = e;
+        document.getElementById("NameLabel").innerText = e.name;
+        document.getElementById("UniqueIdLabel").innerText = e.uniqueId;
+        document.getElementById("VersionLabel").innerText = e.version;
+        document.getElementById("IPLabel").innerText = e.ip;
+        document.getElementById("ConnectionsLabel").innerText = e.totalConnections;
+        document.getElementById("FirstConnectedLabel").innerText = toDateTime(e.clientCreated).toLocaleString();
+        document.getElementById("LastConnectedLabel").innerText = toDateTime(e.clientLastConnected).toLocaleString();
+        document.getElementById("IdleTimeLabel").innerText = e.idleTime;
 
         var temp = document.getElementById("ServerGroupsLabel");
         temp.innerHTML = "";
-        for (var i = 0; i < e.ServerGroupIds.length; i++) {
-            temp.innerHTML += ServerGroupNameFromId(e.ServerGroupIds[i]);
-            if (i + 1 < e.ServerGroupIds.length)
+        for (var i = 0; i < e.serverGroupIds.length; i++) {
+            temp.innerHTML += ServerGroupNameFromId(e.serverGroupIds[i]);
+            if (i + 1 < e.serverGroupIds.length)
                 temp.innerHTML += "<br/>";
         }
 
-        document.getElementById("ChannelGroupLabel").innerText = ChannelGroupNameFromId(e.ChannelGroupId);
+        document.getElementById("ChannelGroupLabel").innerText = ChannelGroupNameFromId(e.channelGroupId);
 
 
 
@@ -305,19 +305,19 @@ function DeselectUser() {
 function SelectChannel(e) {
     DeselectUser();
     ChannelIndex = e.srcElement.id.split("-")[1];
-    document.getElementById("ChannelName").innerText = ChannelList[ChannelIndex].Name;
+    document.getElementById("ChannelName").innerText = ChannelList[ChannelIndex].name;
     Send("ChannelInfo", function (e) {
         ChannelInfo = e;
-        $("#ChannelNameLabel").text(e.Name); $("#channelNameInput").val(e.Name);
+        $("#ChannelNameLabel").text(e.name); $("#channelNameInput").val(e.name);
         if (e.FlagPassword == 1)
             $("#ChannelPasswordLabel").text("True");
         else
             $("#ChannelPasswordLabel").text("False");
-        $("#ChannelTopicLabel").text(e.Topic); $("#channelTopicInput").val(e.Topic);
-        $("#ChannelDescription").text(e.Description); $("#channelDescriptionInput").val(e.Description);
+        $("#ChannelTopicLabel").text(e.topic); $("#channelTopicInput").val(e.topic);
+        $("#ChannelDescription").text(e.description); $("#channelDescriptionInput").val(e.description);
 
         $("#channelControlPanel").collapse('show');
-    }, { ChannelId: ChannelList[ChannelIndex].ChannelId });
+    }, { ChannelId: ChannelList[ChannelIndex].channelId });
 }
 
 function DeselectChannel() {
@@ -340,7 +340,7 @@ function Poke() {
                 $("#pokeSuccess").collapse('hide');
             }, SuccessWindowOpen)
         }
-    }, { Text: document.getElementById("pokeValue").value, ClientId: ClientList[ClientIndex].ClientId });
+    }, { Text: document.getElementById("pokeValue").value, ClientId: ClientList[ClientIndex].clientId });
     document.getElementById("pokeValue").value = "";
 }
 
@@ -350,7 +350,7 @@ function Kick() {
             ShowSuccessMessage("kick");
         }
         UpdateChannelList();
-    }, { Text: document.getElementById("kickValue").value, ClientId: ClientList[ClientIndex].ClientId, Reasonid: $("input[name=optradio]:checked").val() });
+    }, { Text: document.getElementById("kickValue").value, ClientId: ClientList[ClientIndex].clientId, Reasonid: $("input[name=optradio]:checked").val() });
     document.getElementById("kickValue").value = "";
 }
 
@@ -366,12 +366,12 @@ function Ban() {
             ShowSuccessMessage("ban");
         }
         UpdateChannelList();
-    }, { Text: document.getElementById("banReason").value, ClientId: ClientList[ClientIndex].ClientId, Time: time });
+    }, { Text: document.getElementById("banReason").value, ClientId: ClientList[ClientIndex].clientId, Time: time });
 }
 
 function Move() {
-    var cid = ChannelList[document.getElementById("moveToIndex").value].ChannelId;
-    var clid = ClientList[ClientIndex].ClientId;
+    var cid = ChannelList[document.getElementById("moveToIndex").value].channelId;
+    var clid = ClientList[ClientIndex].clientId;
 
     Send("Move", function (e) {
         if (e == "Success") {
@@ -382,20 +382,20 @@ function Move() {
 }
 
 function ChannelUpdateName() {
-    var data = { ChannelId: ChannelList[ChannelIndex].ChannelId };
-    if ($("#channelNameInput").val() != ChannelInfo.Name)
-        data.Name = $("#channelNameInput").val();
-    if ($("#channelTopicInput").val() != ChannelInfo.Topic)
-        data.Topic = $("#channelTopicInput").val();
-    if ($("#channelDescriptionInput").val != ChannelInfo.Description)
-        data.Description = $("#channelDescriptionInput").val();
+    var data = { ChannelId: ChannelList[ChannelIndex].channelId };
+    if ($("#channelNameInput").val() != ChannelInfo.name)
+        data.name = $("#channelNameInput").val();
+    if ($("#channelTopicInput").val() != ChannelInfo.topic)
+        data.topic = $("#channelTopicInput").val();
+    if ($("#channelDescriptionInput").val != ChannelInfo.description)
+        data.description = $("#channelDescriptionInput").val();
     if (Object.keys(data).length == 1)
         return;
 
     Send("ChannelEdit", function (e) {
         UpdateChannelList();
     }, data, function (e) {
-        $("#UpdateChannelNameError").text(e.Message);
+        $("#UpdateChannelNameError").text(e.message);
         $("#UpdateChannelNameError").collapse('show');
         setTimeout(function () {
             $("#UpdateChannelNameError").collapse('hide');
@@ -409,9 +409,9 @@ function ChannelSetPassword() {
         ShowSuccessMessage("UpdateChannelPassword");
     }, {
         Password: $("#channelPasswordInput").val(),
-        ChannelId: ChannelList[ChannelIndex].ChannelId
+        ChannelId: ChannelList[ChannelIndex].channelId
     }, function (e) {
-        $("#UpdateChannelPasswordError").text(e.Message);
+        $("#UpdateChannelPasswordError").text(e.message);
         $("#UpdateChannelPasswordError").collapse('show');
         setTimeout(function () {
             $("#UpdateChannelPasswordError").collapse('hide');
