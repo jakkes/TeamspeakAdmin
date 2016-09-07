@@ -45,6 +45,8 @@ namespace TeamspeakWebAdmin.Controllers
             }
         }
 
+
+
         private void ClearSession()
         {
             HttpContext.Session.Clear();
@@ -82,6 +84,7 @@ namespace TeamspeakWebAdmin.Controllers
 
             try
             {
+                model.IP = Dns.GetHostAddressesAsync(model.IP).Result[0].ToString();
                 model.Guid = Connections.Connect(model);
             }
             catch (Exception ex)

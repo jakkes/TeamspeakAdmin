@@ -14,6 +14,7 @@ namespace TeamspeakWebAdmin.Models
         public string Guid { get; set; }
         public bool Error { get; set; } = false;
         public string ErrorMessage { get; set; }
+        public string RememberMe { get; set; }
 
         public bool LoginSufficent()
         {
